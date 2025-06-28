@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:front_mission/presentation/sign_in_screen/sign_in_screen.dart';
 import 'package:front_mission/presentation/sign_up_screen/sign_up_view_model.dart';
 
+import '../../core/di/di_setup.dart';
 import '../../core/validation/validation_form.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -162,7 +163,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const SignInScreen(),
+                            builder: (context) =>
+                                SignInScreen(signInViewModel: getIt()),
                           ),
                         );
                       }
@@ -175,7 +177,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const SignInScreen(),
+                          builder: (context) =>
+                              SignInScreen(signInViewModel: getIt()),
                         ),
                       );
                     },

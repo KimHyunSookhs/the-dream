@@ -1,3 +1,5 @@
+import 'package:front_mission/data/model/auth_tokens.dart';
+
 import '../../data/model/user.dart';
 
 abstract interface class AuthRepository {
@@ -7,6 +9,12 @@ abstract interface class AuthRepository {
     String name,
     String confirmPassword,
   );
+
+  Future<String?> getJwtToken(String username, String password);
+
+  Future<AuthTokens?> getRefreshToken(String currentRefreshToken);
+
+  Future<String?> getStoredJwtToken();
 
   Future<void> signOut();
 }
