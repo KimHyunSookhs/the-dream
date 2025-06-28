@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:front_mission/presentation/board_screen/board_screen.dart';
+import 'package:front_mission/presentation/sign_in_screen/sign_in_view_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/validation/validation_form.dart';
 
 class SignInScreen extends StatefulWidget {
-  const SignInScreen({super.key});
+  final SignInViewModel signInViewModel;
+
+  const SignInScreen({super.key, required this.signInViewModel});
 
   @override
   State<SignInScreen> createState() => _SignInScreenState();
@@ -87,6 +92,41 @@ class _SignInScreenState extends State<SignInScreen> {
                 validator: (value) => _validationForm.validatePassword(value),
               ),
               const SizedBox(height: 15),
+              ElevatedButton(
+                onPressed: () async {
+                  if (_formKey.currentState?.validate() ?? false) {
+                    String username = _emailController.text;
+                    String password = _passwordController.text;
+
+                    String? jwtToken = await widget.signInViewModel.signIn(
+                      username,
+                      password,
+                    );
+
+                    if (jwtToken != null) {
+                      final prefs = await SharedPreferences.getInstance();
+                      await prefs.setString('jwtToken', jwtToken);
+                      await prefs.setString('username', username);
+                  
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => BoardScreen()),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            widget.signInViewModel.error ??
+                                '로그인 실패. 사용자 이름 또는 비밀번호를 확인해주세요.',
+                          ),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  }
+                },
+                child: Text('로그인'),
+              ),
             ],
           ),
         ),
