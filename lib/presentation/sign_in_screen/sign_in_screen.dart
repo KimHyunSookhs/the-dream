@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:front_mission/core/di/di_setup.dart';
 import 'package:front_mission/presentation/board_screen/board_screen.dart';
 import 'package:front_mission/presentation/sign_in_screen/sign_in_view_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -107,10 +108,12 @@ class _SignInScreenState extends State<SignInScreen> {
                       final prefs = await SharedPreferences.getInstance();
                       await prefs.setString('jwtToken', jwtToken);
                       await prefs.setString('username', username);
-                  
+
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => BoardScreen()),
+                        MaterialPageRoute(
+                          builder: (context) => BoardScreen(viewModel: getIt()),
+                        ),
                       );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(

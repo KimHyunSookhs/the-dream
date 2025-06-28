@@ -36,7 +36,6 @@ class _WriteBoardScreenState extends State<WriteBoardScreen> {
       setState(() {
         _jwtToken = token;
       });
-      widget.viewModel.setJwtToken(token!);
       if (token == null) {
         print('게시글 작성 화면: Secure Storage에 JWT 토큰이 없습니다.');
       } else {
@@ -167,6 +166,7 @@ class _WriteBoardScreenState extends State<WriteBoardScreen> {
                                 category,
                                 _pickedImage,
                               );
+                              setState(() {});
                             },
                             child: Text(
                               '완료',
