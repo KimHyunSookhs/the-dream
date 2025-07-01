@@ -131,7 +131,7 @@ class _DetailBoardScreenState extends State<DetailBoardScreen> {
                     Text(
                       board.title ?? '제목 없음',
                       style: const TextStyle(
-                        fontSize: 30,
+                        fontSize: 40,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -149,7 +149,7 @@ class _DetailBoardScreenState extends State<DetailBoardScreen> {
                     const SizedBox(height: 20),
                     Text(
                       board.content ?? '내용 없음',
-                      style: const TextStyle(fontSize: 16),
+                      style: const TextStyle(fontSize: 26),
                     ),
                     const SizedBox(height: 20),
                     Text(
