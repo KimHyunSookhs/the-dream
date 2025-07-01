@@ -9,6 +9,7 @@ import 'package:front_mission/domain/usecase/delete_board_use_case.dart';
 import 'package:front_mission/domain/usecase/detail_board_use_case.dart';
 import 'package:front_mission/domain/usecase/patch_board_use_case.dart';
 import 'package:front_mission/domain/usecase/sign_in_use_case.dart';
+import 'package:front_mission/domain/usecase/sign_out_use_case.dart';
 import 'package:front_mission/domain/usecase/write_board_use_case.dart';
 import 'package:front_mission/presentation/board_screen/board_screen_view_model.dart';
 import 'package:front_mission/presentation/detail_screen/detail_board_view_model.dart';
@@ -47,6 +48,7 @@ void diSetUp() {
   getIt.registerSingleton(DetailBoardUseCase(detailBoardRepository: getIt()));
   getIt.registerSingleton(DeleteBoardUseCase(detailBoardRepository: getIt()));
   getIt.registerSingleton(PatchBoardUseCase(detailBoardRepository: getIt()));
+  getIt.registerSingleton(SignOutUseCase(authRepository: getIt()));
   //ViewModel
   getIt.registerFactory<SignUpViewModel>(
     () => SignUpViewModel(signupUseCase: getIt()),
@@ -61,7 +63,10 @@ void diSetUp() {
     () => WriteBoardViewModel(writeBoardUseCase: getIt()),
   );
   getIt.registerFactory<BoardScreenViewModel>(
-    () => BoardScreenViewModel(boardListUseCase: getIt()),
+    () => BoardScreenViewModel(
+      boardListUseCase: getIt(),
+      signOutUseCase: getIt(),
+    ),
   );
   getIt.registerFactory<DetailBoardViewModel>(
     () => DetailBoardViewModel(

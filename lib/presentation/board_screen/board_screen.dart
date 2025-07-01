@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/token_manager.dart';
 import '../detail_screen/detail_board_screen.dart';
+import '../sign_in_screen/sign_in_screen.dart';
 
 class BoardScreen extends StatefulWidget {
   final BoardScreenViewModel viewModel;
@@ -66,16 +67,35 @@ class _BoardScreenState extends State<BoardScreen> {
               ? [
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    child: Row(
                       children: [
-                        Text(
-                          user!.username ?? '없음',
-                          style: const TextStyle(fontSize: 12),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              user!.username ?? '없음',
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              user!.name ?? '없음',
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ],
                         ),
-                        Text(
-                          user!.name ?? '없음',
-                          style: const TextStyle(fontSize: 12),
+                        SizedBox(width: 10),
+                        IconButton(
+                          onPressed: () {
+                            widget.viewModel.signOut();
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    SignInScreen(signInViewModel: getIt()),
+                              ),
+                            );
+                          },
+                          icon: Icon(Icons.exit_to_app),
                         ),
                       ],
                     ),

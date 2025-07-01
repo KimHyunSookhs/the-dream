@@ -10,9 +10,15 @@ class AuthRepositoryImpl implements AuthRepository {
   static final storage = FlutterSecureStorage();
 
   @override
-  Future<void> signOut() {
-    // TODO: implement signOut
-    throw UnimplementedError();
+  Future<void> signOut() async {
+    try {
+      await storage.delete(key: 'jwtToken');
+      await storage.delete(key: 'refreshToken');
+      await storage.delete(key: 'username');
+      await storage.delete(key: 'password');
+    } catch (e) {
+      print('로그아웃 중 오류 발생: $e');
+    }
   }
 
   @override
@@ -141,6 +147,33 @@ class AuthRepositoryImpl implements AuthRepository {
       print('AuthRepositoryImpl: 네트워크 요청 중 예외 발생: $e');
       return null;
     }
+  }
+
+  Future<http.Response> authorizedGet(String url) async {
+    String? token = await storage.read(key: 'jwtToken');
+
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 401) {
+      // accessToken 만료됨. 리프레시 시도
+      final refreshToken = await storage.read(key: 'refreshToken');
+      if (refreshToken != null) {
+        final newTokens = await getRefreshToken(refreshToken);
+        if (newTokens != null) {
+          token = newTokens.accessToken;
+          // retry request with new token
+          return await http.get(
+            Uri.parse(url),
+            headers: {'Authorization': 'Bearer $token'},
+          );
+        }
+      }
+    }
+
+    return response;
   }
 
   @override

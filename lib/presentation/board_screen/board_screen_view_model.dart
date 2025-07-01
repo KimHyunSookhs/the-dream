@@ -1,11 +1,19 @@
 import 'package:flutter/foundation.dart';
 import 'package:front_mission/data/model/board_list.dart';
 import 'package:front_mission/data/model/board_list_response.dart';
+import 'package:front_mission/domain/usecase/sign_out_use_case.dart';
 
 import '../../domain/usecase/board_list_use_case.dart';
 
 class BoardScreenViewModel extends ChangeNotifier {
   final BoardListUseCase _boardListUseCase;
+  final SignOutUseCase _signOutUseCase;
+
+  BoardScreenViewModel({
+    required BoardListUseCase boardListUseCase,
+    required SignOutUseCase signOutUseCase,
+  }) : _boardListUseCase = boardListUseCase,
+       _signOutUseCase = signOutUseCase;
 
   List<BoardList> _boards = [];
 
@@ -20,9 +28,6 @@ class BoardScreenViewModel extends ChangeNotifier {
   int _currentPage = 0;
   int _totalPages = 1;
   final int _pageSize = 10;
-
-  BoardScreenViewModel({required BoardListUseCase boardListUseCase})
-    : _boardListUseCase = boardListUseCase;
 
   int get currentPage => _currentPage;
 
@@ -46,6 +51,20 @@ class BoardScreenViewModel extends ChangeNotifier {
       errorMessage = e.toString();
     }
 
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> signOut() async {
+    _isLoading = true;
+    errorMessage = null;
+    notifyListeners();
+
+    try {
+      await _signOutUseCase.execute();
+    } catch (e) {
+      errorMessage = e.toString();
+    }
     _isLoading = false;
     notifyListeners();
   }
