@@ -6,14 +6,13 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../core/token_manager.dart';
+
 class WriteBoardRepositoryImpl implements WriteBoardRepository {
-  String? _jwtToken;
+  final TokenManager _tokenManager;
 
-  WriteBoardRepositoryImpl({String? jwtToken}) : _jwtToken = jwtToken;
-
-  void updateJwtToken(String jwtToken) {
-    _jwtToken = jwtToken;
-  }
+  WriteBoardRepositoryImpl({required TokenManager tokenManager})
+    : _tokenManager = tokenManager;
 
   @override
   Future<void> writeBoard(
@@ -22,13 +21,14 @@ class WriteBoardRepositoryImpl implements WriteBoardRepository {
     String category,
     XFile? imageFile,
   ) async {
-    if (_jwtToken == null) {
+    final String? jwtToken = _tokenManager.jwtToken;
+    if (jwtToken == null) {
       print('게시글 작성 실패: JWT 토큰이 없습니다.');
     }
 
     final uri = Uri.parse('https://front-mission.bigs.or.kr/boards');
     final request = http.MultipartRequest('POST', uri)
-      ..headers['Authorization'] = 'Bearer $_jwtToken';
+      ..headers['Authorization'] = 'Bearer $jwtToken';
 
     final textData = {"title": title, "content": content, "category": category};
     final textJson = json.encode(textData);

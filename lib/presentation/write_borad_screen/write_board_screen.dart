@@ -17,17 +17,26 @@ class WriteBoardScreen extends StatefulWidget {
 class _WriteBoardScreenState extends State<WriteBoardScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
-  final TextEditingController _categoryController = TextEditingController();
   final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
   String? _jwtToken;
   final picker = ImagePicker();
   XFile? _pickedImage;
   Uint8List? _imageBytes;
 
+  final Map<String, String> _categoryMap = {
+    "NOTICE": "공지",
+    "FREE": "자유",
+    "QNA": "Q&A",
+    "ETC": "기타",
+  };
+
+  late String _selectedCategory;
+
   @override
   void initState() {
     super.initState();
     _loadJwtTokenFromSecureStorage();
+    _selectedCategory = _categoryMap.values.first;
   }
 
   Future<void> _loadJwtTokenFromSecureStorage() async {
@@ -36,7 +45,6 @@ class _WriteBoardScreenState extends State<WriteBoardScreen> {
       setState(() {
         _jwtToken = token;
       });
-      widget.viewModel.setJwtToken(token!);
       if (token == null) {
         print('게시글 작성 화면: Secure Storage에 JWT 토큰이 없습니다.');
       } else {
@@ -62,7 +70,6 @@ class _WriteBoardScreenState extends State<WriteBoardScreen> {
   void dispose() {
     _titleController.dispose();
     _contentController.dispose();
-    _categoryController.dispose();
     super.dispose();
   }
 
@@ -91,21 +98,16 @@ class _WriteBoardScreenState extends State<WriteBoardScreen> {
                   ),
                 ),
               ),
-              Text(
-                '카테고리',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-              ),
-              TextField(
-                controller: _categoryController,
-                decoration: InputDecoration(
-                  hintText: '카테고리를 입력해주세요',
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black, width: 1),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black, width: 1),
-                  ),
-                ),
+              DropdownButton(
+                value: _selectedCategory,
+                items: _categoryMap.values.map((label) {
+                  return DropdownMenuItem(value: label, child: Text(label));
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedCategory = value!;
+                  });
+                },
               ),
               SizedBox(height: 12),
               Text('내용', style: TextStyle(fontSize: 20)),
@@ -139,55 +141,59 @@ class _WriteBoardScreenState extends State<WriteBoardScreen> {
               const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
-                  showDialog(
+                  showDialog<bool>(
                     context: context,
                     barrierDismissible: true,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        content: const SingleChildScrollView(
-                          child: ListBody(
-                            children: <Widget>[
-                              Text(
-                                '게시글을 올리시겠습니까?',
-                                style: TextStyle(fontSize: 20),
-                              ),
-                            ],
-                          ),
-                        ),
+                        content: Text('게시글을 올리시겠습니까?'),
                         actions: [
                           TextButton(
-                            onPressed: () async {
-                              Navigator.pop(context, true);
-                              String title = _titleController.text;
-                              String content = _contentController.text;
-                              String category = _categoryController.text;
-                              widget.viewModel.writeBoard(
-                                title,
-                                content,
-                                category,
-                                _pickedImage,
-                              );
+                            onPressed: () {
+                              Navigator.of(context).pop(true);
                             },
-                            child: Text(
-                              '완료',
-                              style: TextStyle(color: Colors.black),
-                            ),
+                            child: Text('완료'),
                           ),
                           TextButton(
                             onPressed: () {
-                              Navigator.pop(context);
+                              Navigator.of(context).pop(false);
                             },
-                            child: Text(
-                              '취소',
-                              style: TextStyle(color: Colors.black),
-                            ),
+                            child: Text('취소'),
                           ),
                         ],
                       );
                     },
-                  );
+                  ).then((confirmed) async {
+                    if (confirmed != true) return;
+
+                    String title = _titleController.text;
+                    String content = _contentController.text;
+                    String categoryKey = _categoryMap.entries
+                        .firstWhere(
+                          (entry) => entry.value == _selectedCategory,
+                          orElse: () => MapEntry("NOTICE", "공지"),
+                        )
+                        .key;
+
+                    final success = await widget.viewModel.writeBoard(
+                      title,
+                      content,
+                      categoryKey,
+                      _pickedImage,
+                    );
+
+                    if (!mounted) return;
+
+                    if (success) {
+                      Navigator.of(context).pop(true);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('게시글 작성에 실패했습니다.')),
+                      );
+                    }
+                  });
                 },
-                child: Text('등록', style: TextStyle(color: Colors.black)),
+                child: Text('등록'),
               ),
             ],
           ),

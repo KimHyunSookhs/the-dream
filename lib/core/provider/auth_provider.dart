@@ -1,59 +1,28 @@
-import 'package:flutter/material.dart';
-import 'package:front_mission/domain/repository/auth_repository.dart';
-import 'package:front_mission/domain/usecase/sign_in_use_case.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/foundation.dart';
+import 'package:front_mission/core/token_manager.dart';
 
-class AuthProvider with ChangeNotifier {
-  final SignInUseCase _signInUseCase;
-  final AuthRepository _authRepository;
-  String? _accessToken;
-  String? _refreshToken;
-  String? _username;
-  String? _name;
-  bool _isLoggedIn = false;
-  bool _isLoading = false;
-  String? _errorMessage;
+class AuthProvider extends ChangeNotifier {
+  final TokenManager _tokenManager; // TokenManager에 의존성 주입
 
-  String? get accessToken => _accessToken;
+  AuthProvider({required TokenManager tokenManager})
+    : _tokenManager = tokenManager;
 
-  String? get refreshToken => _refreshToken;
+  // 현재 토큰 상태를 외부에 노출 (UI에서 사용)
+  String? get jwtToken => _tokenManager.jwtToken;
 
-  String? get username => _username;
+  // // 로그인 여부 (UI에서 사용)
+  // bool get isAuthenticated =>
+  //     _tokenManager.jwtToken != null && _tokenManager.jwtToken!.isNotEmpty;
 
-  String? get name => _name;
-
-  bool get isLoggedIn => _isLoggedIn;
-
-  bool get isLoading => _isLoading;
-
-  String? get errorMessage => _errorMessage;
-
-  AuthProvider({
-    required SignInUseCase signInUseCase,
-    required AuthRepository authRepository, // 주입
-  })
-      : _signInUseCase = signInUseCase,
-        _authRepository = authRepository {
-    _loadTokens(); // 앱 시작 시 토큰 로드
+  /// 로그인 성공 시 토큰을 설정하고 모든 리스너에게 알립니다.
+  void setToken(String token) {
+    _tokenManager.setToken(token); // TokenManager에 토큰 설정
+    notifyListeners(); // 상태 변경 알림
   }
 
-  Future<void> _loadTokens() async {
-    _isLoading = true;
-    notifyListeners();
-    final prefs = await SharedPreferences.getInstance();
-    _accessToken = prefs.getString('jwtToken');
-    _refreshToken = prefs.getString('refreshToken');
-    _username = prefs.getString('username');
-    _name = prefs.getString('name');
-
-    if (_accessToken != null && _refreshToken != null) {
-      _isLoggedIn = true;
-    } else {
-      _isLoggedIn = false;
-      print('자동 로그인 실패: 토큰 없음');
-    }
-    _isLoading = false;
-    notifyListeners();
+  /// 로그아웃 시 토큰을 초기화하고 모든 리스너에게 알립니다.
+  void clearAuth() {
+    _tokenManager.clearToken(); // TokenManager에서 토큰 초기화
+    notifyListeners(); // 상태 변경 알림
   }
-
 }
