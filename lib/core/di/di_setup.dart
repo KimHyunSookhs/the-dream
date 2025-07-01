@@ -1,11 +1,17 @@
 import 'package:front_mission/data/repository/board_list_repository_impl.dart';
+import 'package:front_mission/data/repository/detail_board_repository_impl.dart';
 import 'package:front_mission/data/repository/write_board_repository_impl.dart';
 import 'package:front_mission/domain/repository/board_list_repository.dart';
+import 'package:front_mission/domain/repository/detail_board_repository.dart';
 import 'package:front_mission/domain/repository/write_board_repository.dart';
 import 'package:front_mission/domain/usecase/board_list_use_case.dart';
+import 'package:front_mission/domain/usecase/delete_board_use_case.dart';
+import 'package:front_mission/domain/usecase/detail_board_use_case.dart';
+import 'package:front_mission/domain/usecase/patch_board_use_case.dart';
 import 'package:front_mission/domain/usecase/sign_in_use_case.dart';
 import 'package:front_mission/domain/usecase/write_board_use_case.dart';
 import 'package:front_mission/presentation/board_screen/board_screen_view_model.dart';
+import 'package:front_mission/presentation/detail_screen/detail_board_view_model.dart';
 import 'package:front_mission/presentation/sign_in_screen/sign_in_view_model.dart';
 import 'package:front_mission/presentation/write_borad_screen/write_board_view_model.dart';
 import 'package:get_it/get_it.dart';
@@ -29,13 +35,18 @@ void diSetUp() {
   getIt.registerSingleton<BoardListRepository>(
     BoardListRepositoryImpl(tokenManager: getIt<TokenManager>()),
   );
+  getIt.registerSingleton<DetailBoardRepository>(
+    DetailBoardRepositoryImpl(tokenManager: getIt<TokenManager>()),
+  );
 
   //UseCase
   getIt.registerSingleton(SignupUseCase(authRepository: getIt()));
   getIt.registerSingleton(SignInUseCase(authRepository: getIt()));
   getIt.registerSingleton(WriteBoardUseCase(writeBoardRepository: getIt()));
   getIt.registerSingleton(BoardListUseCase(repository: getIt()));
-
+  getIt.registerSingleton(DetailBoardUseCase(detailBoardRepository: getIt()));
+  getIt.registerSingleton(DeleteBoardUseCase(detailBoardRepository: getIt()));
+  getIt.registerSingleton(PatchBoardUseCase(detailBoardRepository: getIt()));
   //ViewModel
   getIt.registerFactory<SignUpViewModel>(
     () => SignUpViewModel(signupUseCase: getIt()),
@@ -51,6 +62,13 @@ void diSetUp() {
   );
   getIt.registerFactory<BoardScreenViewModel>(
     () => BoardScreenViewModel(boardListUseCase: getIt()),
+  );
+  getIt.registerFactory<DetailBoardViewModel>(
+    () => DetailBoardViewModel(
+      useCase: getIt(),
+      deleteBoardUseCase: getIt(),
+      patchBoardUseCase: getIt(),
+    ),
   );
 
   getIt.registerSingleton<AuthProvider>(

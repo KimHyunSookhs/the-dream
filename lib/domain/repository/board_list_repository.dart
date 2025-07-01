@@ -1,5 +1,5 @@
-import '../../data/model/board_list.dart';
+import '../../data/model/board_list_response.dart';
 
 abstract interface class BoardListRepository {
-  Future<List<BoardList>> listBoard({int page, int size});
+  Future<BoardListResponse> listBoard({int page = 0, int size = 10});
 }

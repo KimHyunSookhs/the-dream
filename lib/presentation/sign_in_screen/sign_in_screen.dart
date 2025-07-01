@@ -109,11 +109,11 @@ class _SignInScreenState extends State<SignInScreen> {
                       await prefs.setString('jwtToken', jwtToken);
                       await prefs.setString('username', username);
 
-                      Navigator.pushReplacement(
-                        context,
+                      Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
                           builder: (context) => BoardScreen(viewModel: getIt()),
                         ),
+                        (route) => false,
                       );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(

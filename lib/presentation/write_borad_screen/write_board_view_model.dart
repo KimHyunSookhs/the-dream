@@ -15,21 +15,19 @@ class WriteBoardViewModel with ChangeNotifier {
 
   String? get error => _error;
 
-  Future<void> writeBoard(
+  Future<bool> writeBoard(
     String title,
     String content,
     String category,
     XFile? image,
   ) async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
     try {
       await _writeBoardUseCase.execute(title, content, category, image);
+      return true; // 성공
     } catch (e) {
       _error = e.toString();
       print("게시글 작성 실패: $_error");
+      return false; // 실패
     }
-    notifyListeners();
   }
 }
