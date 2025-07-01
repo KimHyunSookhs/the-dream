@@ -1,25 +1,37 @@
 ## 🔧 프로젝트 실행 방법
 
-Window 환경에서 안드로이드스튜디오와 Flutter를 활용하여 진행하였습니다.
+본 프로젝트는 Windows 환경의 Android Studio와 Flutter SDK를 활용하여 개발되었습니다.
+에뮬레이터 설치 없이 웹 브라우저에서 바로 실행할 수 있도록 구성되어 있습니다.
 
-1. Flutter SDK 설치: https://flutter.dev/docs/get-started/install
+### 1. Flutter SDK 설치
+ 👉  https://flutter.dev/docs/get-started/install
 
-2. Android Studio 다운받기
-https://developer.android.com/studio?hl=ko&_gl=1*dgkgqd*_up*MQ..*_ga*MjA1MzgwMTAwMy4xNzUxMzc3MDk0*_ga_6HH9YJMN9M*czE3NTEzNzcwOTMkbzEkZzAkdDE3NTEzNzcwOTMkajYwJGwwJGgxNzE0OTc5NzY3
+### 2. Android Studio 설치 및 설
+ 👉 https://developer.android.com/studio?hl=ko
+ 
 
-아래의 블로그를 보고 따라하시면 설정을 더 쉽게 할 수 있습니다
-https://blockdmask.tistory.com/420
+보다 쉬운 설치와 설정을 원하신다면 아래 블로그의 챕터 5까지만 따라 하시면 됩니다.
 
-챕터 6전까지만 해주시면 됩니다.
+ 👉 https://blockdmask.tistory.com/420
 
-File -> Project Structure -> Project에서 SDK가 제대로 설정되어있는지 확인 한번 해주시는게 좋습니다.
+ 
+ File -> Project Structure -> Project 메뉴에서 Flutter SDK 경로가 정확히 설정되어 있는지 확인해주세요.
 
-3. 터미널에 Flutter pub get 을 입력하여 패키지를 다운받아 줍니다.
+### 3. 패키지 의존성 설치
+루트 디렉토리에서 아래 명령어를 실행해주세요
 
-저는 웹사이트에서 진행할 수 있도록 하였기 때문에 에뮬레이터 설치는 필요 없습니다. 
+`flutter pub get`
+
+
+### 4.Flutter는 기본적으로 main.dart가 실행 파일로 설정되어야 합니다.
+Android Studio의 Run 창 상단에서 main.dart가 선택되어 있는지 확인하세요.
 
 ![image](https://github.com/user-attachments/assets/d83fa3a3-47c6-4c23-8846-ab0c1b454986)
-혹시 이부분에 main.dart가 안되어있다면 클릭해서 설정해주시면 됩니다.
 
-4. 터미널에  flutter run -d chrome --web-browser-flag "--disable-web-security" 를 입력하여 웹사이트를 실행시켜줍니다.
-   웹사이트의 cros 정책 때문에 저렇게 실행시켜 주어야합니다.
+✅ 만약 선택되어 있지 않다면 수동으로 클릭해 지정해주세요.
+
+### 5. 웹 실행 (CORS 우회 포함)
+   웹사이트의 cros 정책 때문에 아래와 같이 실행합니다.
+
+   `flutter run -d chrome --web-browser-flag "--disable-web-security"`
+
