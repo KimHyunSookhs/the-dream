@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:front_mission/data/model/user_info.dart';
 
 class TokenManager {
-  String? _jwtToken; // JWT 토큰을 저장할 변수
+  String? _jwtToken;
 
-  String? get jwtToken => _jwtToken; // 현재 토큰 반환
+  String? get jwtToken => _jwtToken;
 
   // 토큰 설정 메서드
   void setToken(String? token) {
@@ -13,7 +13,6 @@ class TokenManager {
     print('TokenManager: JWT 토큰 설정됨 -> ${_jwtToken == null ? "null" : "유효"}');
   }
 
-  // 토큰 초기화 (로그아웃 등)
   void clearToken() {
     _jwtToken = null;
     print('TokenManager: JWT 토큰 초기화됨.');
